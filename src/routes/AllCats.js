@@ -16,12 +16,15 @@ import { Link, Outlet } from "react-router-dom";
 
 
 import React, { Component } from 'react';
+import { withRouter } from "react-router";
+
 // import React, { useState } from 'react';
 
 axios.defaults.headers.common['x-api-key'] = 'de3fa169-c9be-47c0-9dbe-ca9ef320b83b' // for all requests
 
 class AllCats extends Component
 {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -29,8 +32,9 @@ class AllCats extends Component
             error: null,
             isLoaded: false,
             items: [],
+            dropdownValue: null,
             selectedBreed: null,
-
+            preloadedBreed : props.catbreedid,
             currentpics : []
         };
 
@@ -43,8 +47,8 @@ class AllCats extends Component
         console.log(e.value);
         this.setState({ selectedBreed: e.value });
 
-        const url = 'https://api.thecatapi.com/v1/images/search?page=10&limit=10&breed_id=' 
-            + e.value.id;
+        // const url = 'https://api.thecatapi.com/v1/images/search?page=10&limit=10&breed_id=' 
+        //     + e.value.id;
 
         // https://api.thecatapi.com/v1/images/search?breed_ids={breed-id}
 
@@ -52,22 +56,58 @@ class AllCats extends Component
 
         // https://api.thecatapi.com/v1/images/search?breed_ids=beng
 
-        axios.get(url)
-            .then(res => {
-            console.log( res.data );
+        // axios.get(url)
+        //     .then(res => {
+        //         console.log( res.data );
 
-            this.setState({ currentpics: res.data });
-            })
+        //         this.setState({ currentpics: res.data });
+        //     })
+
+        if( e.value != null && e.value !== undefined)
+            this.getCatPics( e.value.id );
 
     }
 
-    componentDidMount() {
-        axios.get('https://api.thecatapi.com/v1/breeds')
-        .then(res => {
-            const breeds = res.data;
-            this.items = breeds;
+    getCatPics(breedid)
+    {
+        const url = 'https://api.thecatapi.com/v1/images/search?page=10&limit=10&breed_id=' 
+            + breedid;
 
-            this.setState({items: breeds});
+        axios.get(url)
+            .then(res => {
+                console.log( res.data );
+                this.setState({ currentpics: res.data });
+            })
+    }
+
+    componentDidMount() 
+    {
+        // const breedid = this.props.match.params.id;
+        axios.get('https://api.thecatapi.com/v1/breeds')
+            .then(res => {
+                const breeds = res.data;
+                this.items = breeds;
+
+                this.setState({items: breeds});
+
+                if( this.state.preloadedBreed != null 
+                    && this.state.preloadedBreed !== undefined)
+                {
+                    console.log(" ====== LOADED WITH BREED ==== " + this.state.preloadedBreed)
+
+                    const url = 'https://api.thecatapi.com/v1/images/search?breed_id=' 
+                        + this.state.preloadedBreed;
+                    
+                    axios.get(url)
+                        .then(res => {
+                            const info = res.data;
+
+                            this.setState({selectedBreed: info[0].breeds[0]});
+                            this.getCatPics(this.state.preloadedBreed);
+                        })
+
+                    
+                }
         })
     }
 
@@ -76,10 +116,6 @@ class AllCats extends Component
         return (
             <div>
                 <div className="card">
-                    <h5>Basic</h5>
-                    <InputText value={this.state.value1} onChange={(e) => this.setState({value1: e.target.value})} />
-                    <span className="p-ml-2">{this.state.value1}</span>
-                    <br />
                     ==========================
                     <br />
                     <h5>Basic</h5>
@@ -88,8 +124,8 @@ class AllCats extends Component
                         options={this.items} 
                         onChange={this.onBreedChange}
                         optionLabel="name" 
-                        filter showClear filterBy="name" 
-                        placeholder="Select a cat breed" />
+                        filter filterBy="name" 
+                        placeholder="Select a cat breed"  />
                     <br />
                     ============
                     <br />
@@ -103,27 +139,19 @@ class AllCats extends Component
                                     height="20%" width="20%"
                                     />
                                 <br />
-                                
-                                <Button label="View Details" 
-                                    className="p-button-outlined" />
-                                    ---- 
-                                    <Link
-                                        to={'/breedinfo/' + this.state.selectedBreed.id + '/' + obj.id }
-                                        key={obj.id}>
-                                        obj.name
-                                    </Link>
+                                <Link
+                                    to={'/breedinfo/' 
+                                        + 
+                                            this.state.selectedBreed.id 
+                                        + '/' + obj.id }
+                                    key={obj.id}>
+                                    <Button label="View Details" 
+                                        className="p-button-outlined" />
+                                </Link>
                             </Card>
                             )
                     }
                     </ul>
-
-
-
-                    {/* <Card
-                        style={{ width: '25rem', marginBottom: '2em' }}>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae numquam deserunt
-                            quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate neque quas!
-                    </Card> */}
                     </div>
                 </div>
             </div>
@@ -136,3 +164,10 @@ class AllCats extends Component
 
 
 export default AllCats;
+
+// export default (props) => (
+//     <TaskDetail
+//         {...props}
+//         params={useParams()}
+//     />
+// );

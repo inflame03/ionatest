@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 
+import Browse from './routes/Browse';
 import AllCats from './routes/AllCats';
 import CatInfo from './routes/CatInfo';
 import BreedInfo from './routes/BreedInfo';
@@ -16,11 +17,14 @@ ReactDOM.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />}>
-        <Route path="browse" element={<AllCats />} />
+        {/* <Route path={["browse", "browse/:breeid"]} element={<Browse />}> */}
+        <Route path="browse" element={<Browse />}>
+        </Route>
         <Route path="moreinfo" element={<CatInfo />}>
-          
         </Route>
         <Route path="breedinfo/:breedid/:imageid" element={<BreedInfo />} />
+        <Route path="browse/:thebreed" element={<Browse />} />
+        
       </Route>
       
     </Routes>

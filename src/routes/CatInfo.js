@@ -4,6 +4,7 @@ import 'primereact/resources/primereact.min.css'                    //core css
 import 'primeicons/primeicons.css' 
 
 import { Panel } from 'primereact/panel';
+import { Button } from 'primereact/button';
 
 import axios from 'axios';
 
@@ -50,6 +51,13 @@ class CatInfo extends Component
     {
         return (
             <div>
+                <Link
+                    to={'/browse/' + this.state.breedId }
+                    key={this.state.breedId}>
+                        <Button label="Go Back" 
+                            className="p-button-outlined" />
+                </Link>
+                <br /><br />
                 <Panel header={this.state.breedInfo.name}>
                     <h3> Origin : {this.state.breedInfo.origin} </h3>
                     <img src={this.state.imageURL} height="80%" width="80%" />
@@ -58,7 +66,14 @@ class CatInfo extends Component
                     <br />
                     {this.state.breedInfo.description}
                 </Panel>
-                boo
+                <br /><br />
+                <Link
+                    to={'/browse/' + this.state.breedId }>
+                        <Button label="Go Back" 
+                            className="p-button-outlined" />
+                </Link>
+                
+                <br /><br />
             </div>
         )
     }

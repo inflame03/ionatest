@@ -1,6 +1,7 @@
 import './routes/App.css';
 
 import { Link, Outlet } from "react-router-dom";
+import AllCats from './routes/AllCats';
 
 import React, { Component } from 'react';
 // import React, { useState } from 'react';
@@ -24,11 +25,12 @@ class App extends Component
         
         <h3>
           <Link to="/browse">Browse Cats</Link>
-          &nbsp;&nbsp;&nbsp;||&nbsp;&nbsp;&nbsp;
-          <Link to="/moreinfo">Cat FACTS!</Link>
+          {/* &nbsp;&nbsp;&nbsp;||&nbsp;&nbsp;&nbsp;
+          <Link to="/moreinfo">Cat FACTS!</Link> */}
         </h3>
         <hr />
         <Outlet />
+        {/* <AllCats /> */}
 
       </div>
     )
