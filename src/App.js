@@ -1,7 +1,6 @@
 import './routes/App.css';
 
 import { Link, Outlet } from "react-router-dom";
-import AllCats from './routes/AllCats';
 
 import React, { Component } from 'react';
 // import React, { useState } from 'react';

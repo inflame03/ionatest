@@ -1,7 +1,5 @@
 import './App.css';
 
-import { InputText } from 'primereact/inputtext'
-
 import 'primereact/resources/themes/lara-light-indigo/theme.css'    //theme
 import 'primereact/resources/primereact.min.css'                    //core css
 import 'primeicons/primeicons.css'                                  //icons
@@ -12,11 +10,10 @@ import { Button } from 'primereact/button';
 
 import axios from 'axios';
 
-import { Link, Outlet } from "react-router-dom";
+import { Link  } from "react-router-dom";
 
 
 import React, { Component } from 'react';
-import { withRouter } from "react-router";
 
 // import React, { useState } from 'react';
 
@@ -35,33 +32,20 @@ class AllCats extends Component
             dropdownValue: null,
             selectedBreed: null,
             preloadedBreed : props.catbreedid,
-            currentpics : []
+            currentpics : [],
+            currPage : 1,
+            foundMore: false
         };
 
         this.items = null;
 
         this.onBreedChange = this.onBreedChange.bind(this);
+        this.loadMoreClicked = this.loadMoreClicked.bind(this);
+        this.getCatPics = this.getCatPics.bind(this);
     }
 
     onBreedChange(e) {
-        console.log(e.value);
         this.setState({ selectedBreed: e.value });
-
-        // const url = 'https://api.thecatapi.com/v1/images/search?page=10&limit=10&breed_id=' 
-        //     + e.value.id;
-
-        // https://api.thecatapi.com/v1/images/search?breed_ids={breed-id}
-
-        // https://api.thecatapi.com/v1/images/search?page=1&limit=10&breed_id=aege
-
-        // https://api.thecatapi.com/v1/images/search?breed_ids=beng
-
-        // axios.get(url)
-        //     .then(res => {
-        //         console.log( res.data );
-
-        //         this.setState({ currentpics: res.data });
-        //     })
 
         if( e.value != null && e.value !== undefined)
             this.getCatPics( e.value.id );
@@ -70,13 +54,15 @@ class AllCats extends Component
 
     getCatPics(breedid)
     {
-        const url = 'https://api.thecatapi.com/v1/images/search?page=10&limit=10&breed_id=' 
+        const url = 'https://api.thecatapi.com/v1/images/search?page=' 
+            + this.state.currPage + '&limit=10&breed_id=' 
             + breedid;
 
         axios.get(url)
             .then(res => {
-                console.log( res.data );
                 this.setState({ currentpics: res.data });
+                let btn = document.getElementById('btnLoadMore');
+                btn.style.display = 'block';
             })
     }
 
@@ -93,8 +79,6 @@ class AllCats extends Component
                 if( this.state.preloadedBreed != null 
                     && this.state.preloadedBreed !== undefined)
                 {
-                    console.log(" ====== LOADED WITH BREED ==== " + this.state.preloadedBreed)
-
                     const url = 'https://api.thecatapi.com/v1/images/search?breed_id=' 
                         + this.state.preloadedBreed;
                     
@@ -111,14 +95,59 @@ class AllCats extends Component
         })
     }
 
+    findImageById (array, id) {
+        return array.find((element) => {
+          return element.id === id;
+        })
+    }
+
+    loadMoreClicked()
+    {
+        const theBreed = this.state.selectedBreed.id
+
+        const url = 'https://api.thecatapi.com/v1/images/search?page=' 
+            + (this.state.currPage + 1)  + '&limit=10&breed_id=' 
+            + theBreed;
+
+        
+        this.setState({currPage: this.state.currPage + 1});
+
+        axios.get(url)
+            .then(res => {
+                const retrieved = res.data
+                let tempId;
+                let foundImg
+                this.setState({foundMore: false});
+
+                for( let ctr = 0 ; ctr < retrieved.length ; ctr ++ )
+                {
+                    tempId = retrieved[ctr].id;
+
+                    foundImg = this.findImageById(this.state.currentpics, tempId);
+
+                    if( foundImg === undefined )
+                    {
+                        this.setState(previousState => ({
+                            currentpics: [...previousState.currentpics, retrieved[ctr]]
+                        }));
+                        this.setState({foundMore: true});
+                    }
+                }
+
+                if( this.state.foundMore === false )
+                {
+                    let btn = document.getElementById('btnLoadMore');
+                    btn.style.display = 'none';
+                }
+            })
+    }
+
     render() 
     {
         return (
             <div>
                 <div className="card">
-                    ==========================
-                    <br />
-                    <h5>Basic</h5>
+                    <h3>Select Breed</h3>
                         <Dropdown 
                         value={this.state.selectedBreed} 
                         options={this.items} 
@@ -127,31 +156,41 @@ class AllCats extends Component
                         filter filterBy="name" 
                         placeholder="Select a cat breed"  />
                     <br />
-                    ============
                     <br />
+                    <div className="card"> 
+                        <div className="p-grid"> 
+                            {
+                                this.state.currentpics.map(
+                                    (obj) => 
+                                    <div  key={obj.id} className="p-col-12 p-md-4">
+                                        <Card>
+                                            <img src={obj.url} alt={obj.url} 
+                                                width="250px"
+                                                />
+                                            <br />
+                                            <Link
+                                                to={'/breedinfo/' 
+                                                    + 
+                                                        this.state.selectedBreed.id 
+                                                    + '/' + obj.id }
+                                                key={obj.id}>
+                                                <Button label="View Details" 
+                                                    className="p-button-outlined" />
+                                            </Link>
+                                        </Card>
+                                    </div>
+                                    )
+                            }
+                        </div>
+                    </div>
                     <div>
-                    <ul>
-                    {
-                        this.state.currentpics.map(
-                            (obj) => 
-                            <Card key={obj.id}>
-                                <img src={obj.url} alt={obj.url} 
-                                    height="20%" width="20%"
-                                    />
-                                <br />
-                                <Link
-                                    to={'/breedinfo/' 
-                                        + 
-                                            this.state.selectedBreed.id 
-                                        + '/' + obj.id }
-                                    key={obj.id}>
-                                    <Button label="View Details" 
-                                        className="p-button-outlined" />
-                                </Link>
-                            </Card>
-                            )
-                    }
-                    </ul>
+                        <br />
+                        <br />
+                        <br />
+                            <Button id='btnLoadMore'
+                                label="Load More" onClick={this.loadMoreClicked}
+                                className="p-button-button p-button-success p-button-rounded " />
+                            
                     </div>
                 </div>
             </div>

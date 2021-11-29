@@ -9,8 +9,7 @@ import { Button } from 'primereact/button';
 import axios from 'axios';
 
 import React, { Component } from 'react';
-import { Link, Route, useParams, useRouteMatch } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 axios.defaults.headers.common['x-api-key'] = 'de3fa169-c9be-47c0-9dbe-ca9ef320b83b' // for all requests
 
@@ -31,8 +30,6 @@ class CatInfo extends Component
     }
 
     componentDidMount() {
-        console.log(this.state.breedId);
-        console.log(this.state.imageId);
 
         const url = 'https://api.thecatapi.com/v1/images/search?breed_id=' 
             + this.state.breedId;
@@ -42,8 +39,6 @@ class CatInfo extends Component
 
                 this.setState({breedInfo: info[0].breeds[0]});
 
-                
-                console.log(this.state.breedInfo);
             })
     }
 
@@ -60,7 +55,8 @@ class CatInfo extends Component
                 <br /><br />
                 <Panel header={this.state.breedInfo.name}>
                     <h3> Origin : {this.state.breedInfo.origin} </h3>
-                    <img src={this.state.imageURL} height="80%" width="80%" />
+                    <img src={this.state.imageURL} height="80%" width="80%"
+                        alt="catpic.jpg" />
                     <br />
                     <h5> {this.state.breedInfo.temperament} </h5>
                     <br />

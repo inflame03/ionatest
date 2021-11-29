@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 
+import 'primeflex/primeflex.css';
+
 import Browse from './routes/Browse';
-import AllCats from './routes/AllCats';
 import CatInfo from './routes/CatInfo';
 import BreedInfo from './routes/BreedInfo';
 
