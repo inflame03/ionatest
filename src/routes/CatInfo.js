@@ -26,7 +26,6 @@ class CatInfo extends Component
             breedInfo: {}
         };
 
-        // this.imageURL = 
     }
 
     componentDidMount() {

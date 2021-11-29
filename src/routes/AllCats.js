@@ -68,7 +68,6 @@ class AllCats extends Component
 
     componentDidMount() 
     {
-        // const breedid = this.props.match.params.id;
         axios.get('https://api.thecatapi.com/v1/breeds')
             .then(res => {
                 const breeds = res.data;
@@ -201,12 +200,4 @@ class AllCats extends Component
 
 }
 
-
 export default AllCats;
-
-// export default (props) => (
-//     <TaskDetail
-//         {...props}
-//         params={useParams()}
-//     />
-// );

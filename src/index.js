@@ -18,7 +18,6 @@ ReactDOM.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />}>
-        {/* <Route path={["browse", "browse/:breeid"]} element={<Browse />}> */}
         <Route path="browse" element={<Browse />}>
         </Route>
         <Route path="moreinfo" element={<CatInfo />}>
